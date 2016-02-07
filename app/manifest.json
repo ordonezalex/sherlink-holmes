@@ -1,51 +1,35 @@
 {
+  "manifest_version": 2,
   "name": "__MSG_appName__",
   "version": "0.0.1",
-  "manifest_version": 2,
+
+  "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
   },
-  "default_locale": "en",
-  "background": {
-    "scripts": [
-      "scripts/chromereload.js",
-      "scripts/background.js"
-    ]
-  },
+
+  "author": "Alex Ordonez <me@ordonezalex.com>",
   "homepage_url": "https://github.com/ordonezalex/sherlink-holmes",
   "permissions": [
-    "tabs",
-    "http://*/*",
-    "https://*/*",
-    "history",
-    "webRequest",
-    "*://*.google.com/"
+    "http://*.wikipedia.org/wiki/*",
+    "https://*.wikipdia.org/wiki/*"
   ],
-  "options_ui": {
-    "page": "options.html",
-    "chrome_style": true
-  },
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
-        "https://*/*"
+        "http://*.wikipedia.org/wiki/*",
+        "https://*.wikipedia.org/wiki/*"
       ],
       "js": [
         "scripts/contentscript.js"
       ],
-      "run_at": "document_end",
+      "css": [
+        "styles/main.css"
+      ],
+      "run_at": "document_idle",
       "all_frames": false
     }
-  ],
-  "page_action": {
-    "default_icon": {
-      "19": "images/icon-19.png",
-      "38": "images/icon-38.png"
-    },
-    "default_title": "Sherlink Holmes",
-    "default_popup": "popup.html"
-  }
+  ]
 }

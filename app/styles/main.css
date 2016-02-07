@@ -1,3 +1,35 @@
 body {
   padding: 20px;
 }
+
+#sherlink {
+  /*
+   * Should accomodate most results
+   */
+  min-width: 16rem;
+  max-width: 48rem;
+
+  /*
+   *Should show top ~15 results
+   */
+  height: 20em;
+  overflow-y: scroll;
+
+  /*
+   * Should be transparent and sticky
+   */
+  position: fixed;
+  top: 4rem;
+  right: 2rem;
+  opacity: 0.7;
+
+  transition: 0.5s opacity;
+}
+
+#sherlink:hover {
+  opacity: 1;
+}
+
+#sherlink a {
+  display: block;
+}
