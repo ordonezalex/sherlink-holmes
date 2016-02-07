@@ -7,6 +7,8 @@ function addSidebar() {
   // Create sidebar
   var sidebar = document.createElement('aside');
   sidebar.id = 'sherlink';
+
+  // Let Wikipedia style the sidebar
   sidebar.classList.add('infobox');
 
   // Add sidebar to container
@@ -31,16 +33,14 @@ function addLinkToSidebar(element) {
  * Check if link is from Wikipedia
  * @returns {boolean}
  * @param element
- * @param index
- * @param array
  */
-function isWikipedia(element, index, array) {
+function isWikipedia(element) {
   // Does the link point to wikipedia?
 
   return element.href.includes(window.location.hostname + '/wiki/');
 }
 
-function isTextOnly(element, index, array) {
+function isTextOnly(element) {
   // Does the link only contain text?
 
   return element.childElementCount === 0
@@ -48,7 +48,7 @@ function isTextOnly(element, index, array) {
     && element.firstChild.nodeType === Node.TEXT_NODE;
 }
 
-function isNotPageAnchor(element, index, array) {
+function isNotPageAnchor(element) {
   // Does the link look like an anchor to this page?
 
   let start = element.href.indexOf('/wiki/') + 6;
@@ -74,7 +74,7 @@ function findLinks() {
   var links = [];
 
   // Deeply clone nodes
-  candidates.forEach(function (element, index, array) {
+  candidates.forEach(function (element) {
     links.push(element.cloneNode(true));
   });
 
