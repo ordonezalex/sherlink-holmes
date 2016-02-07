@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "__MSG_appName__",
-  "version": "0.0.1",
+  "version": "0.0.4",
 
   "default_locale": "en",
   "description": "__MSG_appDescription__",
@@ -14,10 +14,19 @@
 
   "author": "Alex Ordonez <me@ordonezalex.com>",
   "homepage_url": "https://github.com/ordonezalex/sherlink-holmes",
+
+  "background": {
+    "scripts": [
+      "scripts/chromereload.js",
+      "scripts/background.js"
+    ]
+  },
+
   "permissions": [
     "http://*.wikipedia.org/wiki/*",
-    "https://*.wikipdia.org/wiki/*"
+    "https://*.wikipedia.org/wiki/*"
   ],
+
   "content_scripts": [
     {
       "matches": [

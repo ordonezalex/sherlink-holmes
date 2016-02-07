@@ -19,7 +19,7 @@ body {
    * Should be transparent and sticky
    */
   position: fixed;
-  top: 4rem;
+  top: 8rem;
   right: 2rem;
   opacity: 0.7;
 

@@ -40,6 +40,11 @@ function isWikipedia(element) {
   return element.href.includes(window.location.hostname + '/wiki/');
 }
 
+/**
+ * Check if link is just text
+ * @param element
+ * @returns {boolean}
+ */
 function isTextOnly(element) {
   // Does the link only contain text?
 
@@ -48,19 +53,55 @@ function isTextOnly(element) {
     && element.firstChild.nodeType === Node.TEXT_NODE;
 }
 
+/**
+ * Check if link points to this article
+ * @param element
+ * @returns {boolean}
+ */
 function isNotPageAnchor(element) {
-  // Does the link look like an anchor to this page?
+  // Does the link anchor to this page?
 
-  let start = element.href.indexOf('/wiki/') + 6;
+  // Find page name by removing '/wiki/' from pathname
+  var pageName = window.location.pathname.substr(6);
 
-  let pageUrl = location.pathname.substr(start);
+  return !element.href.includes(pageName);
+}
 
-  let isPageAnchor = pageUrl === element.href.includes(pageUrl)
-    || element.href.substr(0, 1) === '#';
+function isNotSpecialPage(element) {
+  // Does the link point to a special page?
 
-  console.log('Checking if %s begins with #: %s', pageUrl, isPageAnchor);
+  return !element.href.includes('Wikipedia:')
+    && !element.href.includes('Portal:')
+    && !element.href.includes('Category:')
+    && !element.href.includes('Help:')
+    && !element.href.includes('Special:')
+    && !element.href.includes('Talk:')
+    && !element.href.includes('Template:')
+    && !element.href.includes('Main_Page');
+}
 
-  return !isPageAnchor;
+/**
+ * Remove duplicate links
+ * @param array
+ * @returns {Array}
+ */
+function removeDuplicates(array) {
+  var results = [];
+  var unique = {};
+
+  array.forEach(function(element) {
+    if (!unique[element.href]) {
+      // Found a unique item
+
+      // Push this to the results
+      results.push(element);
+
+      // Store this as a discovered unique value
+      unique[element.href] = element;
+    }
+  });
+
+  return results;
 }
 
 /**
@@ -81,7 +122,10 @@ function findLinks() {
   // Keep only links that are from Wikipedia
   links = links.filter(isWikipedia)
     .filter(isTextOnly)
-    .filter(isNotPageAnchor);
+    .filter(isNotPageAnchor)
+    .filter(isNotSpecialPage);
+
+  links = removeDuplicates(links);
 
   return links;
 }
