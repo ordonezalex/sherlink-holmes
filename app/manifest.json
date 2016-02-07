@@ -23,8 +23,10 @@
   },
 
   "permissions": [
+    "webRequest",
     "http://*.wikipedia.org/wiki/*",
-    "https://*.wikipedia.org/wiki/*"
+    "https://*.wikipedia.org/wiki/*",
+    "https://*.wikimedia.org/*"
   ],
 
   "content_scripts": [

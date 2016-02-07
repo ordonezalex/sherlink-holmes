@@ -1,11 +1,14 @@
 'use strict';
 
+var links = [];
+var sidebar;
+
 /**
  * Add a sidebar to the page
  */
 function addSidebar() {
   // Create sidebar
-  var sidebar = document.createElement('aside');
+  sidebar = document.createElement('aside');
   sidebar.id = 'sherlink';
 
   // Let Wikipedia style the sidebar
@@ -22,8 +25,15 @@ function addSidebar() {
  * @param element
  */
 function addLinkToSidebar(element) {
-  // Get the sidebar
-  var sidebar = document.getElementById('sherlink');
+  var views = element.views;
+
+  for (var i = 0; i < sidebar.childNodes.length; i++) {
+    if (views >= sidebar.childNodes[i].views) {
+      // New node has more views and this node
+
+      sidebar.insertBefore(element, sidebar.childNodes[i]);
+    }
+  }
 
   // Add this link
   sidebar.appendChild(element);
@@ -82,14 +92,13 @@ function isNotSpecialPage(element) {
 
 /**
  * Remove duplicate links
- * @param array
  * @returns {Array}
  */
-function removeDuplicates(array) {
+function removeDuplicates() {
   var results = [];
   var unique = {};
 
-  array.forEach(function(element) {
+  links.forEach(function (element) {
     if (!unique[element.href]) {
       // Found a unique item
 
@@ -101,7 +110,130 @@ function removeDuplicates(array) {
     }
   });
 
-  return results;
+  // Set links global
+  links = results;
+}
+
+function $http(url) {
+  // A small example of object
+  var core = {
+
+    // Method that performs the ajax request
+    ajax: function (method, url, args) {
+
+      // Creating a promise
+      return new Promise(function (resolve, reject) {
+
+        // Instantiates the XMLHttpRequest
+        var client = new XMLHttpRequest();
+
+        client.open(method, url);
+        client.send();
+
+        client.onload = function () {
+          if (this.status >= 200 && this.status < 300) {
+            // Performs the function "resolve" when this.status is equal to 2xx
+            resolve(this.response);
+          } else {
+            // Performs the function "reject" when this.status is different than 2xx
+            reject(this.statusText);
+          }
+        };
+        client.onerror = function () {
+          reject(this.statusText);
+        };
+      });
+    }
+  };
+
+  // Adapter pattern
+  return {
+    'get': function (args) {
+      return core.ajax('GET', url, args);
+    }
+  };
+}
+
+function ajax(element, start, end) {
+  // Find page name by removing '/wiki/' from pathname
+  var startIndex = element.href.indexOf('/wiki/') + 6;
+  var pageName = element.href.substr(startIndex);
+
+  var callback = {
+    success: function (data) {
+      var response = JSON.parse(data);
+
+      // Sum the page views
+      var views = 0;
+
+      for (var i = 0, len = response.items.length; i < len; i++) {
+        views += response.items[i].views;
+      }
+
+      element.views = views;
+
+      //console.log('%O', element);
+
+      addLinkToSidebar(element);
+    },
+    error: function (data) {
+      console.log(2, 'error', JSON.parse(data));
+    }
+  };
+
+  $http('https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/all-agents/' + pageName + '/daily/' + start + '/' + end)
+    .get()
+    .then(callback.success)
+    .catch(callback.error);
+}
+
+/**
+ * Sort links
+ * @returns {Array}
+ */
+function sortLinks() {
+  var date = new Date();
+
+  // Go back one month
+  date.setMonth(date.getMonth() - 1);
+  var start = '' + date.getFullYear();
+
+  if (date.getMonth().toString().length < 2) {
+    start += '0';
+  }
+
+  // Add one, because months are zero-index
+  start += date.getMonth() + 1;
+
+  if (date.getDate().toString().length < 2) {
+    start += '0';
+  }
+
+  start += date.getDate();
+
+  start += '00';
+
+  date = new Date();
+  var end = '' + date.getFullYear();
+
+  if (date.getMonth().toString().length < 2) {
+    end += '0';
+  }
+
+  // Add one, because months are zero-index
+  end += date.getMonth() + 1;
+
+  if (date.getDate().toString().length < 2) {
+    end += '0';
+  }
+
+  end += date.getDate();
+
+  end += '00';
+
+  links.forEach(function (element) {
+    ajax(element, start, end);
+  });
 }
 
 /**
@@ -111,8 +243,6 @@ function removeDuplicates(array) {
 function findLinks() {
   // Get all links
   var candidates = Array.prototype.slice.call(document.getElementsByTagName('a'));
-
-  var links = [];
 
   // Deeply clone nodes
   candidates.forEach(function (element) {
@@ -125,9 +255,9 @@ function findLinks() {
     .filter(isNotPageAnchor)
     .filter(isNotSpecialPage);
 
-  links = removeDuplicates(links);
+  removeDuplicates();
 
-  return links;
+  sortLinks();
 }
 
 /**
@@ -138,10 +268,7 @@ function init() {
   addSidebar();
 
   // Get all valid links from the page
-  var links = findLinks();
-
-  // Add all valid links to the sidebar
-  links.forEach(addLinkToSidebar);
+  findLinks();
 }
 
 init();
