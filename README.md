@@ -15,7 +15,7 @@ As of writing, New York City is mentioned before the Golden Gate Bridge.
 You probably want to read about the Golden Gate Bride if you're looking at the San Fransisco article.
 That's what Sherlink Holmes suggests.
 
-You can [download the Chrome Extension](https://chrome.google.com/webstore/detail/sherlink-holmes/kbofnbmmpajmiiajdebddjajfdcpjdfg) today.
+You can [install the Chrome Extension](https://chrome.google.com/webstore/detail/sherlink-holmes/kbofnbmmpajmiiajdebddjajfdcpjdfg) today.
 
 ## Build
 
